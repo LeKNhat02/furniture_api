@@ -1,17 +1,33 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+
 from app.database.db import connect_to_mongo, close_mongo_connection, get_database
-from app.routes import auth, products
+from app.routes import auth, products, customers, sales, suppliers, promotions, payments, reports, inventory
 from app.services.user_service import UserService
+from app.services.demo_data_service import DemoDataService
+
+# Load environment variables
+load_dotenv("db.env")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     await connect_to_mongo()
     db = get_database()
+    
+    # Tạo demo users
     user_service = UserService(db)
     await user_service.create_demo_users()
+    
+    # Tạo demo data
+    demo_service = DemoDataService(db)
+    await demo_service.create_demo_products()
+    await demo_service.create_demo_customers()
+    await demo_service.create_demo_suppliers()
+    
     yield
     # Shutdown
     await close_mongo_connection()
@@ -36,6 +52,13 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/api")
 app.include_router(products.router, prefix="/api")
+app.include_router(customers.router, prefix="/api")
+app.include_router(sales.router, prefix="/api")
+app.include_router(suppliers.router, prefix="/api")
+app.include_router(promotions.router, prefix="/api")
+app.include_router(payments.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
+app.include_router(inventory.router, prefix="/api")
 
 # Health check
 @app.get("/health")
