@@ -1,16 +1,17 @@
-import os
+from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
-class Settings:
-    MYSQL_USER = os.getenv("MYSQL_USER", "root")
-    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
-    MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
-    MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
-    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "furniture_db")
-    SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")
-    ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+class Settings(BaseSettings):
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "mysql+mysqlconnector://root:password@localhost:3306/furniture_db")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "your_secret_key")
+    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+    DEBUG: bool = os.getenv("DEBUG", "True").lower() == "true"
+    
+    class Config:
+        env_file = ".env"
 
 settings = Settings()
