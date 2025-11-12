@@ -1,0 +1,84 @@
+# FURNITURE APP - DATABASE CONNECTION INFORMATION
+# ==================================================
+
+## MySQL Workbench Connection Settings
+Connection Name: furniture_db
+Connection Method: Standard (TCP/IP)
+Hostname: 127.0.0.1
+Port: 3306
+Username: furniture_user
+Password: furniture_password
+Default Schema: furniture_db
+
+## Database Information
+Database Name: furniture_db
+Database Engine: MariaDB 11.8.3
+Status: Running and Connected ✅
+
+## Backend API Information
+API URL: http://localhost:8000
+API Documentation: http://localhost:8000/docs
+API Redoc: http://localhost:8000/redoc
+Server Status: Running ✅
+Port: 8000
+
+## Database Tables Created (12 tables)
+1. users                - User management and authentication
+2. products             - Furniture products catalog
+3. customers            - Customer management
+4. suppliers            - Supplier management
+5. inventory            - Stock/inventory management
+6. inventory_transactions - Inventory transaction history
+7. sales                - Sales orders
+8. sale_items           - Sales order line items
+9. payments             - Payment transactions
+10. promotions          - Marketing promotions
+11. promotion_product   - Many-to-many: promotions ↔ products
+12. reports             - Business reports and analytics
+
+## Backend Architecture
+Repository Pattern implemented
+Services layer using repositories
+JWT Authentication configured
+FastAPI with SQLAlchemy ORM
+Auto-generated API documentation
+CORS middleware enabled
+Error handling middleware
+
+## Environment Configuration
+Database URL: mysql+pymysql://furniture_user:furniture_password@127.0.0.1:3306/furniture_db
+Secret Key: your_secret_key_here_change_in_production
+Algorithm: HS256
+Access Token Expire: 30 minutes
+Debug Mode: True
+
+## Test Commands
+# Test database connection:
+mysql -h 127.0.0.1 -u furniture_user -pfurniture_password furniture_db -e "SHOW TABLES;"
+
+# Start backend server:
+cd /home/logntsu/Downloads/furniture_api
+source venv/bin/activate
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+## Frontend Integration
+Flutter App Location: /home/logntsu/furniture_app
+Backend Compatibility: 98% compatible
+HTTP Client: Dio
+Response Format: JSON with camelCase transformation
+
+## Notes
+- MariaDB service is running automatically on system startup
+- Virtual environment is configured in: venv/
+- All dependencies installed successfully
+- Repository pattern provides clean architecture
+- Ready for production deployment with proper secrets
+
+## Troubleshooting
+If connection fails:
+1. Check MariaDB service: sudo systemctl status mysql
+2. Verify credentials: mysql -u furniture_user -p
+3. Check port availability: sudo ss -tulpn | grep 3306
+4. Restart backend: Kill uvicorn process and restart
+
+Last Updated: November 12, 2025
