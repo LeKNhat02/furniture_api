@@ -6,7 +6,7 @@ from app.schemas.promotion_schema import (
 )
 from app.services.promotion_service import PromotionService
 from app.core.security import get_current_user
-from typing import List
+from typing import List, Optional
 
 router = APIRouter(prefix="/api/promotions", tags=["Promotions"])
 
@@ -21,13 +21,16 @@ def create_promotion(
 
 @router.get("/", response_model=List[PromotionResponse])
 def get_promotions(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=1000),
+    search: Optional[str] = Query(None),
+    is_active: Optional[bool] = Query(None),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Get all promotions"""
-    return PromotionService.get_all_promotions(db, skip, limit)
+    """Get all promotions with search and filter"""
+    skip = (page - 1) * limit
+    return PromotionService.get_all_promotions(db, skip, limit, search, is_active)
 
 @router.get("/active/list", response_model=List[PromotionResponse])
 def get_active_promotions(

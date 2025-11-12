@@ -6,7 +6,8 @@ from app.schemas.payment_schema import (
 )
 from app.services.payment_service import PaymentService
 from app.core.security import get_current_user
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 router = APIRouter(prefix="/api/payments", tags=["Payments"])
 
@@ -21,13 +22,24 @@ def create_payment(
 
 @router.get("/", response_model=List[PaymentResponse])
 def get_payments(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=1000),
+    search: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    payment_method: Optional[str] = Query(None),
+    sale_id: Optional[int] = Query(None),
+    customer_id: Optional[int] = Query(None),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Get all payments"""
-    return PaymentService.get_all_payments(db, skip, limit)
+    """Get all payments with filters"""
+    skip = (page - 1) * limit
+    return PaymentService.get_all_payments(
+        db, skip, limit, search, status, payment_method, 
+        sale_id, customer_id, start_date, end_date
+    )
 
 @router.get("/{payment_id}", response_model=PaymentResponse)
 def get_payment(
@@ -47,6 +59,16 @@ def update_payment(
 ):
     """Update payment status"""
     return PaymentService.update_payment(db, payment_id, payment_data)
+
+@router.post("/{payment_id}/refund", response_model=PaymentResponse)
+def refund_payment(
+    payment_id: int,
+    notes: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Refund a payment"""
+    return PaymentService.refund_payment(db, payment_id, notes)
 
 @router.delete("/{payment_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_payment(

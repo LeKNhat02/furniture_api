@@ -9,6 +9,15 @@ class InventoryBase(BaseModel):
     reorder_level: int = Field(default=10, ge=0)
     reorder_quantity: int = Field(default=50, gt=0)
 
+class InventoryCreate(InventoryBase):
+    pass
+
+class InventoryUpdate(BaseModel):
+    quantity_on_hand: Optional[int] = Field(None, ge=0)
+    quantity_reserved: Optional[int] = Field(None, ge=0)
+    reorder_level: Optional[int] = Field(None, ge=0)
+    reorder_quantity: Optional[int] = Field(None, gt=0)
+
 class InventoryResponse(InventoryBase):
     id: int
     last_count_date: Optional[datetime] = None
@@ -24,11 +33,21 @@ class InventoryTransactionCreate(BaseModel):
     reason: str = Field(..., min_length=1, max_length=255)
     reference_number: Optional[str] = None
     notes: Optional[str] = None
+    supplier_id: Optional[int] = None  # Add supplier field for IN transactions
 
-class InventoryTransactionResponse(InventoryTransactionCreate):
-    id: int
-    inventory_id: int
-    created_at: datetime
+class InventoryTransactionResponse(BaseModel):
+    # Match frontend InventoryTransaction model exactly
+    id: str  # String type for frontend compatibility
+    productId: str  # camelCase + String type
+    productName: str = ""  # Include product name for frontend
+    type: str  # Frontend uses 'type' not 'transaction_type'
+    quantity: int
+    reason: str
+    notes: Optional[str] = None
+    supplierId: Optional[str] = None  # camelCase + String type
+    date: datetime  # Frontend field name
+    createdBy: Optional[str] = None  # Frontend field
+    createdAt: datetime  # camelCase
     
     class Config:
         from_attributes = True

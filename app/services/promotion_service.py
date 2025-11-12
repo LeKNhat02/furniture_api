@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from app.database.models import Promotion, Product
-from app.schemas.promotion_schema import PromotionCreate, PromotionUpdate
+from app.schemas.promotion_schema import PromotionCreate, PromotionUpdate, PromotionResponse
 from fastapi import HTTPException, status
-from datetime import date
-from typing import List
+from datetime import datetime
+from typing import List, Optional
 
 class PromotionService:
     @staticmethod
@@ -20,6 +21,8 @@ class PromotionService:
             description=promotion_data.description,
             discount_type=promotion_data.discount_type,
             discount_value=promotion_data.discount_value,
+            min_purchase=promotion_data.min_purchase,  # Add new fields
+            max_discount=promotion_data.max_discount,   # Add new fields
             start_date=promotion_data.start_date,
             end_date=promotion_data.end_date,
             is_active=promotion_data.is_active
@@ -40,8 +43,34 @@ class PromotionService:
         return promotion
     
     @staticmethod
-    def get_all_promotions(db: Session, skip: int = 0, limit: int = 100) -> List[Promotion]:
-        return db.query(Promotion).offset(skip).limit(limit).all()
+    def get_all_promotions(
+        db: Session, 
+        skip: int = 0, 
+        limit: int = 100,
+        search: Optional[str] = None,
+        is_active: Optional[bool] = None
+    ) -> List[PromotionResponse]:
+        """Get promotions and transform to frontend format"""
+        query = db.query(Promotion)
+        
+        if search:
+            query = query.filter(
+                or_(
+                    Promotion.name.contains(search),
+                    Promotion.description.contains(search)
+                )
+            )
+        
+        if is_active is not None:
+            query = query.filter(Promotion.is_active == is_active)
+        
+        promotions = query.offset(skip).limit(limit).all()
+        
+        # Transform to frontend format
+        return [
+            PromotionService._transform_promotion_response(promotion)
+            for promotion in promotions
+        ]
     
     @staticmethod
     def get_promotion_by_id(db: Session, promotion_id: int) -> Promotion:
@@ -91,5 +120,36 @@ class PromotionService:
         db.commit()
     
     @staticmethod
-    def get_active_promotions(db: Session) -> List[Promotion]:
-        return db.query(Promotion).filter(Promotion.is_active == True).all()
+    def get_active_promotions(db: Session) -> List[PromotionResponse]:
+        """Get active promotions in frontend format"""
+        promotions = db.query(Promotion).filter(Promotion.is_active).all()
+        return [
+            PromotionService._transform_promotion_response(promotion)
+            for promotion in promotions
+        ]
+    
+    @staticmethod
+    def _transform_promotion_response(promotion: Promotion) -> PromotionResponse:
+        """Transform database model to frontend-compatible response"""
+        # Normalize discount_type to frontend format
+        discount_type_mapping = {
+            "PERCENTAGE": "percentage",
+            "percentage": "percentage",
+            "FIXED": "fixed_amount",
+            "fixed_amount": "fixed_amount"
+        }
+        
+        return PromotionResponse(
+            id=str(promotion.id),  # Convert to String
+            name=promotion.name,
+            description=promotion.description,
+            discountType=discount_type_mapping.get(promotion.discount_type, "percentage"),  # camelCase + normalize
+            discountValue=promotion.discount_value,  # camelCase
+            minPurchase=promotion.min_purchase,  # camelCase
+            maxDiscount=promotion.max_discount,  # camelCase
+            startDate=datetime.combine(promotion.start_date, datetime.min.time()),  # camelCase + convert to datetime
+            endDate=datetime.combine(promotion.end_date, datetime.min.time()),    # camelCase + convert to datetime
+            isActive=promotion.is_active,  # camelCase
+            createdAt=promotion.created_at,  # camelCase
+            updatedAt=promotion.updated_at   # camelCase
+        )

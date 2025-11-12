@@ -6,7 +6,8 @@ from app.schemas.sale_schema import (
 )
 from app.services.sale_service import SaleService
 from app.core.security import get_current_user
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 router = APIRouter(prefix="/api/sales", tags=["Sales"])
 
@@ -21,13 +22,20 @@ def create_sale(
 
 @router.get("/", response_model=List[SaleResponse])
 def get_sales(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=1000),
+    search: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Get all sales"""
-    return SaleService.get_all_sales(db, skip, limit)
+    """Get all sales with filters"""
+    skip = (page - 1) * limit
+    return SaleService.get_all_sales(
+        db, skip, limit, search, status, start_date, end_date
+    )
 
 @router.get("/{sale_id}", response_model=SaleResponse)
 def get_sale(
@@ -48,12 +56,21 @@ def update_sale(
     """Update sale status or notes"""
     return SaleService.update_sale(db, sale_id, sale_data)
 
+@router.patch("/{sale_id}/cancel", response_model=SaleResponse)
+def cancel_sale(
+    sale_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Cancel sale and restore inventory"""
+    return SaleService.cancel_sale(db, sale_id)
+
 @router.delete("/{sale_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_sale(
     sale_id: int,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Delete (cancel) sale and restore inventory"""
+    """Delete sale and restore inventory"""
     SaleService.delete_sale(db, sale_id)
     return None

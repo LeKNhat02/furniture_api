@@ -1,13 +1,14 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import or_
 from app.database.models import Sale, SaleItem, Product, Inventory, Customer
-from app.schemas.sale_schema import SaleCreate, SaleUpdate
+from app.schemas.sale_schema import SaleCreate, SaleUpdate, SaleResponse, SaleItemResponse
 from fastapi import HTTPException, status
 from datetime import datetime
-from typing import List
+from typing import Optional
 
 class SaleService:
     @staticmethod
-    def create_sale(db: Session, sale_data: SaleCreate, user_id: int = None) -> Sale:
+    def create_sale(db: Session, sale_data: SaleCreate, user_id: int = None):
         # Validate customer exists
         customer = db.query(Customer).filter(Customer.id == sale_data.customer_id).first()
         if not customer:
@@ -59,6 +60,8 @@ class SaleService:
             discount=sale_data.discount,
             tax=sale_data.tax,
             final_amount=final_amount,
+            payment_method=sale_data.payment_method,
+            is_paid=sale_data.is_paid,
             notes=sale_data.notes
         )
         db.add(sale)
@@ -84,40 +87,127 @@ class SaleService:
         
         db.commit()
         db.refresh(sale)
-        return sale
+        
+        # Return transformed response
+        return SaleService._transform_sale_response(db, sale)
     
     @staticmethod
-    def get_all_sales(db: Session, skip: int = 0, limit: int = 100) -> List[Sale]:
-        return db.query(Sale).offset(skip).limit(limit).all()
+    def get_all_sales(
+        db: Session, 
+        skip: int = 0, 
+        limit: int = 100,
+        search: Optional[str] = None,
+        status_filter: Optional[str] = None,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None
+    ):
+        # Use joinedload to eagerly load related data
+        query = db.query(Sale).options(
+            joinedload(Sale.customer),
+            joinedload(Sale.items).joinedload(SaleItem.product)
+        )
+        
+        if search:
+            query = query.join(Customer).filter(
+                or_(
+                    Sale.invoice_number.contains(search),
+                    Customer.name.contains(search),
+                    Customer.phone.contains(search)
+                )
+            )
+        
+        if status_filter:
+            query = query.filter(Sale.status == status_filter)
+        
+        if start_date:
+            query = query.filter(Sale.sale_date >= start_date)
+        
+        if end_date:
+            query = query.filter(Sale.sale_date <= end_date)
+        
+        sales = query.order_by(Sale.sale_date.desc()).offset(skip).limit(limit).all()
+        
+        # Transform all sales for frontend compatibility
+        result = []
+        for sale in sales:
+            result.append(SaleService._transform_sale_response(db, sale))
+        
+        return result
     
     @staticmethod
-    def get_sale_by_id(db: Session, sale_id: int) -> Sale:
-        sale = db.query(Sale).filter(Sale.id == sale_id).first()
+    def get_sale_by_id(db: Session, sale_id: int):
+        sale = db.query(Sale).options(
+            joinedload(Sale.customer),
+            joinedload(Sale.items).joinedload(SaleItem.product)
+        ).filter(Sale.id == sale_id).first()
+        
         if not sale:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Sale not found"
             )
-        return sale
+        
+        return SaleService._transform_sale_response(db, sale)
     
     @staticmethod
     def update_sale(
         db: Session,
         sale_id: int,
         sale_data: SaleUpdate
-    ) -> Sale:
-        sale = SaleService.get_sale_by_id(db, sale_id)
+    ):
+        sale = db.query(Sale).filter(Sale.id == sale_id).first()
+        if not sale:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Sale not found"
+            )
         
         for key, value in sale_data.dict(exclude_unset=True).items():
             setattr(sale, key, value)
         
         db.commit()
         db.refresh(sale)
-        return sale
+        
+        return SaleService._transform_sale_response(db, sale)
+    
+    @staticmethod
+    def cancel_sale(db: Session, sale_id: int):
+        """Cancel a sale and restore inventory"""
+        sale = db.query(Sale).options(joinedload(Sale.items)).filter(Sale.id == sale_id).first()
+        if not sale:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Sale not found"
+            )
+        
+        if sale.status == "cancelled":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Sale is already cancelled"
+            )
+        
+        # Restore inventory
+        for item in sale.items:
+            inventory = db.query(Inventory).filter(
+                Inventory.product_id == item.product_id
+            ).first()
+            if inventory:
+                inventory.quantity_on_hand += item.quantity
+        
+        sale.status = "cancelled"
+        db.commit()
+        db.refresh(sale)
+        
+        return SaleService._transform_sale_response(db, sale)
     
     @staticmethod
     def delete_sale(db: Session, sale_id: int):
-        sale = SaleService.get_sale_by_id(db, sale_id)
+        sale = db.query(Sale).options(joinedload(Sale.items)).filter(Sale.id == sale_id).first()
+        if not sale:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Sale not found"
+            )
         
         # Restore inventory
         for item in sale.items:
@@ -130,3 +220,53 @@ class SaleService:
         # Delete sale (cascades to items)
         db.delete(sale)
         db.commit()
+        return {"message": "Sale deleted successfully"}
+    
+    @staticmethod
+    def _transform_sale_response(db: Session, sale: Sale):
+        """Transform sale to match frontend SaleModel expectations"""
+        
+        # Transform sale items with computed fields
+        items = []
+        for item in sale.items:
+            product = item.product
+            item_subtotal = item.unit_price * item.quantity
+            subtotal_after_discount = item_subtotal - item.discount
+            
+            items.append(SaleItemResponse(
+                productId=str(item.product_id),  # String for frontend
+                productName=product.name if product else '',
+                quantity=item.quantity,
+                price=item.unit_price,  # Match frontend field name
+                discount=item.discount,
+                itemSubtotal=item_subtotal,
+                subtotal=subtotal_after_discount
+            ))
+        
+        # Calculate totals
+        total_subtotal = sum(item.itemSubtotal for item in items)
+        total_discount = sum(item.discount for item in items)
+        final_total = total_subtotal - total_discount
+        total_item_count = sum(item.quantity for item in items)
+        
+        # Get customer info
+        customer = sale.customer
+        
+        return SaleResponse(
+            id=str(sale.id),  # String for frontend compatibility
+            orderNumber=sale.invoice_number,  # camelCase
+            customerId=str(sale.customer_id) if sale.customer_id else None,  # String type
+            customerName=customer.name if customer else None,
+            customerPhone=customer.phone if customer else None,
+            items=items,  # Embedded items with computed fields
+            paymentMethod=sale.payment_method,  # camelCase
+            status=sale.status,
+            isPaid=sale.is_paid,  # camelCase
+            notes=sale.notes,
+            createdAt=sale.created_at,  # camelCase
+            updatedAt=sale.updated_at,  # camelCase
+            subtotal=total_subtotal,
+            totalDiscount=total_discount,
+            total=final_total,
+            itemCount=total_item_count
+        )

@@ -6,7 +6,8 @@ from app.schemas.inventory_schema import (
 )
 from app.services.inventory_service import InventoryService
 from app.core.security import get_current_user
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 router = APIRouter(prefix="/api/inventory", tags=["Inventory"])
 
@@ -37,6 +38,23 @@ def add_inventory_transaction(
 ):
     """Add inventory transaction (IN, OUT, ADJUSTMENT)"""
     return InventoryService.add_transaction(db, transaction)
+
+@router.get("/transactions", response_model=List[InventoryTransactionResponse])
+def get_transactions(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=1000),
+    product_id: Optional[int] = Query(None),
+    type: Optional[str] = Query(None),
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Get inventory transactions with filters"""
+    skip = (page - 1) * limit
+    return InventoryService.get_transactions(
+        db, skip, limit, product_id, type, start_date, end_date
+    )
 
 @router.get("/low-stock/list", response_model=List[InventoryResponse])
 def get_low_stock(
