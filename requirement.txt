@@ -1,0 +1,31 @@
+# FastAPI Web Framework
+fastapi==0.104.1
+
+# ASGI Server
+uvicorn==0.24.0
+
+# Database ORM
+sqlalchemy==2.0.23
+
+# MySQL Driver
+pymysql==1.1.0
+
+# Database Migrations
+alembic==1.13.1
+
+# Password Hashing
+passlib==1.7.4
+bcrypt==4.1.1
+
+# JWT Token Authentication
+PyJWT==2.10.1
+python-jose==3.3.0
+cryptography==41.0.7
+
+# Data Validation
+pydantic==2.5.0
+pydantic-settings==2.1.0
+email-validator==2.1.0
+
+# Environment Variables
+python-dotenv==1.0.0
