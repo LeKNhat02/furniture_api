@@ -61,5 +61,55 @@ class InventoryService:
         ).all()
     
     @staticmethod
-    def get_inventory_list(db: Session, skip: int = 0, limit: int = 100) -> List[Inventory]:
-        return db.query(Inventory).offset(skip).limit(limit).all()
+    def get_inventory_list(db: Session, skip: int = 0, limit: int = 100) -> List[dict]:
+        """Get inventory list with product information"""
+        inventories = db.query(Inventory).join(Product).offset(skip).limit(limit).all()
+        
+        result = []
+        for inv in inventories:
+            product = db.query(Product).filter(Product.id == inv.product_id).first()
+            result.append({
+                'id': str(inv.id),
+                'product_id': str(inv.product_id),
+                'product_name': product.name if product else f'Sản phẩm {inv.product_id}',
+                'quantity': inv.quantity_on_hand,
+                'reorder_level': inv.reorder_level,
+                'last_updated': inv.last_updated.isoformat() if inv.last_updated else None
+            })
+        
+        return result
+    
+    @staticmethod
+    def get_transactions_list(db: Session, skip: int = 0, limit: int = 100, 
+                              product_id: int = None, transaction_type: str = None) -> List[dict]:
+        """Get inventory transactions with product information"""
+        query = db.query(InventoryTransaction).join(
+            Inventory, InventoryTransaction.inventory_id == Inventory.id
+        )
+        
+        if product_id:
+            query = query.filter(Inventory.product_id == product_id)
+        
+        if transaction_type:
+            query = query.filter(InventoryTransaction.transaction_type == transaction_type.upper())
+        
+        transactions = query.order_by(InventoryTransaction.created_at.desc()).offset(skip).limit(limit).all()
+        
+        result = []
+        for trans in transactions:
+            inventory = db.query(Inventory).filter(Inventory.id == trans.inventory_id).first()
+            product = db.query(Product).filter(Product.id == inventory.product_id).first() if inventory else None
+            
+            result.append({
+                'id': str(trans.id),
+                'product_id': str(inventory.product_id) if inventory else '',
+                'product_name': product.name if product else 'Unknown',
+                'type': 'in' if trans.transaction_type == 'IN' else 'out',
+                'quantity': trans.quantity,
+                'reason': trans.reason or '',
+                'notes': trans.notes,
+                'date': trans.created_at.isoformat() if trans.created_at else None,
+                'created_at': trans.created_at.isoformat() if trans.created_at else None
+            })
+        
+        return result
