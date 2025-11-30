@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.database.models import User
+from app.database.models import User, Customer
 from app.core.security import hash_password, verify_password, create_access_token
 from app.schemas.user_schema import UserCreate, UserLogin, ChangePasswordRequest, UpdateProfileRequest
 from fastapi import HTTPException, status
@@ -28,6 +28,21 @@ class AuthService:
         self.db.add(new_user)
         self.db.commit()
         self.db.refresh(new_user)
+        
+        # Tự động tạo Customer nếu role là customer/user
+        if user_data.role in ['customer', 'user']:
+            new_customer = Customer(
+                user_id=new_user.id,
+                name=user_data.full_name or user_data.username,
+                email=user_data.email,
+                phone=user_data.phone,
+                address=None,
+                city=None,
+                country='Việt Nam'
+            )
+            self.db.add(new_customer)
+            self.db.commit()
+        
         return new_user
     
     def login_user(self, user_data: UserLogin):

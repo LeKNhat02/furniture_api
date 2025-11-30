@@ -1,0 +1,72 @@
+name: KIVIK
+title: Sofa with chaise
+img
+id: PRO05
+rootPrice: 1099
+currentPrice: 1099
+categoryItemId: CATE06-4
+status: active
+
+description:
+Enjoy the super comfy KIVIK sofa with deep seat cushions made of pocket springs, high resilience foam and polyester fibers – adding both firm support and relaxing softness. 
+The size and depth of the sofa make it perfect for a nice nap or when the whole family is gathered. There is room for everyone and even extra seating on the wide armrests. The wide armrests have room for everything from your mobile phone to a bowl of movie snacks and very comfortable to lay your head on when you lie down on the sofa for a rest. KIVIK sofa has a strong personality and a clear design language, while the options mean that you can easily match it with your home decor. You can place the chaise section to the left or right of the sofa, and switch whenever you like. The chaise can stand alone or be added onto the sofas. It is easy to combine the sofa with one or more chaise lounges thanks to the removable armrests. Pocket springs are a durable solution that makes the sofa retain both its shape and comfort for many years. This cover is made of Hillared, a durable and soft fabric with a clear texture. The cover is easy to keep clean since it can be machine washed and is easy to take off and put on again. 10-year guarantee. Read about the terms in the guarantee brochure. 
+
+material:
+Smolder resistant lining/ Smolder resistant lining:
+Polyester wadding
+Back and seat frame:
+Fiberboard, Plywood, Solid wood, Particleboard
+Armrest frame:
+Fiberboard, Solid wood, Plywood, Particleboard
+Seat cushion:
+High-resilience polyurethane foam (cold foam) 2.2 lb/cu.ft., Polyurethane foam 2.0 lb/cu.ft.
+Pocket spring unit:
+Steel
+Back cushion:
+Polyester fiber balls
+Chaise section frame
+Smolder resistant lining/ Smolder resistant lining:
+Polyester wadding
+Back and seat frame:
+Fiberboard, Particleboard, Plywood, Solid wood
+Seat cushion:
+High-resilience polyurethane foam (cold foam) 2.2 lb/cu.ft., Polyurethane foam 2.0 lb/cu.ft., Felt liner
+Pocket spring unit:
+Steel
+Back cushion:
+Polyester fiber balls
+Loveseat cover/ chaise cover
+55 % cotton, 25 % polyester (100% recycled), 12 % viscose/rayon, 8 % linen
+
+review: 43
+sellest: 0
+dateEnter: 28/4
+
+Size
+
+Max. width: 280
+
+Height: 83
+
+Min. depth: 95
+
+Max. depth: 163
+
+Min. seat depth: 60
+
+Max. seat depth: 124
+
+Seat height: 45
+
+color
+
+Hillared anthracite
+Kelinge gray-turquoise
+Tibbleby beige/gray
+Tresund anthracite
+Tresund light beige
+
+assets/products/PRO05/PRO05-22.png
+
+
+

@@ -1,0 +1,71 @@
+name: Brimnes
+img
+id: PRO02
+rootPrice: 369.00
+currentPrice: 369.00
+categoryItemId: CATE01-2
+status: active
+size:
+Height of drawer (inside): 20.955 cm
+Width: 102.87 cm
+Height: 57.15 cm
+Drawer width (inside): 81.915 cm
+Drawer depth (inside): 54.9275 cm
+Bed width: 193.9925 cm
+Bed length: 194.945 cm
+Mattress length: 188.9125 cm
+Mattress width: 97.155 cm
+Maximum load/drawer:19.958 kg
+
+description:
+The daybed must be combined with two twin mattresses. They are placed on top of each other when you use the daybed as a single bed, and next to each other when you use it as a double bed. Coordinates with other furniture in the BRIMNES series. Mattress and bedlinens are sold separately. Slatted bed base is included.
+
+material:
+Bed frame panel/ Front frame/ Drawer front panel:
+Particleboard, Paper foil, Plastic edging
+Bed end filling:
+Fiberboard, Paper foil
+Back panel/ Bottom rail:
+Particleboard, Paper foil
+Bed base slats:
+Solid pine
+Drawer sides/ Drawer back:
+Particleboard, Plastic foil
+Drawer bottom:
+Fiberboard, Acrylic paint
+review: 0
+sellest: 0
+dateEnter: 14/4
+
+IMG_1
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-1.png?alt=media&token=aeb3c9b5-79dd-4c6f-8368-ca6f7780ff8d
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-2.png?alt=media&token=75a33e40-abfe-4a4a-9f06-6850204f4d3e
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-3.png?alt=media&token=f011570c-9464-4383-8a73-2d158dde2d19
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-4.png?alt=media&token=3c65485a-6213-43f4-b556-9665e0c12ebc
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-5.png?alt=media&token=a8e8e946-27d7-46e0-9bb6-4f17a2369d86
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-6.png?alt=media&token=33485a14-39cd-40a0-bb3a-59f5a7f35957
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-7.png?alt=media&token=880a75a2-416c-4558-b082-f49cd8db53b3
+
+IMG_2
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-8.png?alt=media&token=38aed55f-f0ce-4b73-a1a7-4fb72a2e455d
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-10.png?alt=media&token=1e272c13-b4f1-449b-8b8f-f019f104ef8c
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-11.png?alt=media&token=18460758-86cf-46f5-a2db-d8d31dd00253
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-12.png?alt=media&token=1ed4af8c-d1cd-4b3f-865f-7ab7b5419b96
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-13.png?alt=media&token=9fab7d5c-9c3d-4e5f-b6a6-4e258636dacb
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-14.png?alt=media&token=b5ce1a36-fa09-4c71-a88c-ca518f0592f9
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-9.png?alt=media&token=302cc5ec-f865-47dd-a5b0-253cf16cea62
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO02%2FPRO02-7.png?alt=media&token=880a75a2-416c-4558-b082-f49cd8db53b3

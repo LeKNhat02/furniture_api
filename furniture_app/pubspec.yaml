@@ -54,6 +54,8 @@ dependencies:
   image_picker: ^0.8.7+4
   # For multipart content types
   http_parser: ^4.0.0
+  # Photo view for fullscreen image zoom
+  photo_view: ^0.14.0
 
 dev_dependencies:
   flutter_test:
@@ -65,3 +67,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
+  # Thêm assets cho ảnh sản phẩm
+  assets:
+    - assets/products/

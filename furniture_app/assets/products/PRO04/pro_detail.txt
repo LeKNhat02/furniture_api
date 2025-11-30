@@ -1,0 +1,38 @@
+name: Rakkestad
+img
+id: PRO01
+rootPrice: 249.99
+currentPrice: 249.99
+categoryItemId: CATE01-1
+status: active
+size:
+Hight: 175.7
+Width: 55.0
+Depth: 117.3
+
+description:
+Wardrobe with 3 doors. The clothes rail holds about 20 shirts on hangers. One shelf holds about 10 pairs of folded pants or 20 T-shirts. May be completed with up to 2 additional RAKKESTAD shelves.
+
+material:
+Top panel/ Bottom panel/ Side panel/ Shelf/ Plinth:
+Particleboard, Paper foil
+Back panel:
+Fiberboard, Printed acrylic paint
+Door frame:
+Fiberboard, Particleboard, Paper foil
+Door panel:
+Fiberboard, Paper foil
+
+review: 0
+sellest: 0
+dateEnter: 14/4
+
+
+img
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO01%2FPRO01-1.png?alt=media&token=9d1bfb27-a634-4bd3-9a71-a56d7a05e084
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO01%2FPRO01-2.png?alt=media&token=2e56b50b-73b9-490e-ad50-ff21c96f49e3
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO01%2FPRO01-3.png?alt=media&token=59cbc566-98b8-4946-bb63-a6fc8b057651
+
+https://firebasestorage.googleapis.com/v0/b/flutter-project-e3817.appspot.com/o/products%2FPRO01%2FPRO01-4.png?alt=media&token=3facfa8f-e011-4294-9134-c562bd6da9d9

@@ -1,0 +1,53 @@
+name: STRANDMON
+title: Wing chair
+img
+id: PRO06
+rootPrice: 429
+currentPrice: 429
+categoryItemId: CATE06-1
+status: active
+
+description:
+You can really loosen up and relax in comfort because the high back on this chair provides extra support for your neck. 10 year Limited warranty. Read about the terms in the warranty brochure.
+
+material:
+Fabric:
+100 % cotton
+Frame:
+Plywood, Polyurethane foam 1.2 lb/cu.ft., Polyurethane foam 1.5 lb/cu.ft., Polyurethane foam 2.2 lb/cu.ft., Polyester wadding, Particleboard, Solid wood
+Seat cushion:
+Polyurethane foam 2.2 lb/cu.ft., Polyester wadding, Polyester wadding
+Leg:
+Solid wood, Stain
+
+review: 1165
+sellest: 0
+dateEnter: 27/4
+
+SIZE 
+
+Width: 82
+
+Depth: 96
+
+Height: 101
+
+Seat width: 49
+
+Seat depth: 54
+
+Seat height: 45
+
+color
+Djuparp dark blue
+Djuparp dark green
+Djuparp red-brown
+Kelinge beige
+Kvillsfors dark blue/blue
+Nordvalla dark gray
+Skiftebo yellow
+Vibberbo black/beige
+
+assets/products/PRO06/PRO06-5.png
+
+

@@ -1,0 +1,49 @@
+name: MALM
+title: Bed frame, high, black-brown/Luröy, Queen
+img
+id: PRO02
+rootPrice: 299
+currentPrice: 200
+categoryItemId: CATE01-12
+status: active
+
+description:
+Wood veneer gives you the same look, feel and beauty as solid wood with unique variations in grain, color and texture. This versatile bed frame will look great with your choice of textiles and bedroom furniture. You can sit up comfortably in bed thanks to the high headboard – just prop some pillows behind your back and you will have a comfortable place to read or watch TV. You can easily vacuum under the bed frame to keep the space clean and dust-free. Adjustable bed sides allow you to use mattresses of different thicknesses. 17 layer-glued slats adjust to your body weight and increase the suppleness of the mattress.
+
+material:
+Head/footboard:
+Particleboard, Fiberboard, Fiberboard, Ash veneer, Stain, Clear acrylic lacquer, Printed and embossed acrylic paint, Plastic edging, Honeycomb structure paper filling (min. 70% recycled)
+Bedside:
+Particleboard, Fiberboard, Ash veneer, Paper, Stain, Clear acrylic lacquer, Printed and embossed acrylic paint, Plastic edging
+Center support beam
+Galvanized steel
+Slatted bed base
+Layer glued slats:
+Eucalyptus veneer, Pine veneer, Adhesive resin as coating
+Ribbon:
+100 % polyester
+Bed slats:
+Layer-glued wood veneer, Birch veneer, Adhesive resin as coating
+Ribbon:
+100 %polyester
+
+review: 687
+sellest: 2
+dateEnter: 27/4
+
+Length: 211
+
+Width: 168
+
+Footboard height: 38
+
+Headboard height: 100
+
+Mattress length: 202
+
+Mattress width: 152
+
+Height: 100
+
+Height under furniture: 22
+

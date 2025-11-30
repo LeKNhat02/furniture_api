@@ -1,0 +1,33 @@
+name: GARDENIA JASMINOIDES
+title: Potted plant, Scented gardenia
+img
+id: PRO08
+rootPrice: 24.99
+currentPrice: 24.99
+categoryItemId: CATE02-7
+status: active
+
+description:
+Native to Asia and Africa.
+Slow growing.
+Scented flowers.
+Sensitive to draught.
+This plant is sensitive to over-watering. This may be the cause if the buds start to fall off.
+Flowering plants bloom between a few days and several months depending on the quality of care.
+Give your plants a boost with fertilizer every month. If you notice that the plant has gone dormant, leave it be until next season.
+IKEA provides all potted plants with nutrient-rich soil, repotting is not needed until 1 year after purchase.
+Remove dust every now and then in order to allow the plant to get as much light as possible.
+The height of the plants can vary.
+
+material:
+
+review: 1
+sellest: 5
+SIZE 
+
+Diameter of plant pot: 6 "
+Height of plant: 4 "
+
+COLOR : Green #677853
+
+assets/products/PRO08/PRO08-1.png

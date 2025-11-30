@@ -51,6 +51,7 @@ class Customer(Base):
     __tablename__ = "customers"
       
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), unique=True, nullable=True)
     name = Column(String(255), nullable=False, index=True)
     email = Column(String(255))
     phone = Column(String(20), unique=True, index=True)
@@ -61,6 +62,7 @@ class Customer(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
     # Relationships
+    user = relationship("User", backref="customer")
     sales = relationship("Sale", back_populates="customer")
 
 # ============ Suppliers ============

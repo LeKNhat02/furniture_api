@@ -1,0 +1,26 @@
+name: SMYCKA
+title: Artificial bouquet, indoor/outdoor/Tulip light pink
+img
+id: PRO09
+rootPrice: 14.99
+currentPrice: 14.99
+categoryItemId: CATE02-7
+status: active
+
+description:
+Lifelike artificial bouquet that remains just as fresh-looking and beautiful year after year.
+You can bend and adjust the flowers any way you want because of the steel wires in the stems.
+The stem can be shortened by using cutting pliers.
+Suitable for both indoor and outdoor use.
+
+material:
+
+review: 1
+sellest: 5
+SIZE 
+
+Height: 34.925
+
+COLOR : Ligh pink #e7cfd0
+
+assets/products/PRO09/PRO09-1.png
