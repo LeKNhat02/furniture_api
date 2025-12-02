@@ -36,19 +36,26 @@ async def create_promotion(
 
 @router.get("/")
 async def get_promotions(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    search: str = Query(None, description="Search by name"),
+    is_active: bool = Query(None, description="Filter by active status"),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Get all promotions"""
+    """Get all promotions with pagination, search, and filters"""
     try:
+        skip = (page - 1) * limit
         service = PromotionService(db)
-        promotions = service.get_all_promotions(skip, limit)
+        promotions = service.get_all_promotions(skip, limit, search, is_active)
+        total_count = service.get_promotions_count(search, is_active)
         return {
             "data": promotions,
             "message": "Promotions retrieved successfully",
-            "status_code": 200
+            "status_code": 200,
+            "page": page,
+            "limit": limit,
+            "total": total_count
         }
     except HTTPException as e:
         raise

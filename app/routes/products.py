@@ -1,9 +1,10 @@
 import logging
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status, Path
+from fastapi import APIRouter, Depends, HTTPException, status, Path, Query
 from sqlalchemy.orm import Session
 from app.database.db import get_db
-from app.schemas.product_schema import ProductCreate, ProductResponse
+from app.database.models import Inventory
+from app.schemas.product_schema import ProductCreate, ProductUpdate, ProductResponse
 from app.schemas.response_schema import DataResponse, ListDataResponse
 from app.services.product_service import ProductService
 from app.core.security import get_current_user
@@ -11,6 +12,31 @@ from app.utils.validators import validate_id
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/products", tags=["products"])
+
+
+def _enrich_product_with_inventory(db: Session, product):
+    """Helper function to add inventory data to product response"""
+    inventory = db.query(Inventory).filter(Inventory.product_id == product.id).first()
+    
+    # Create dict from product
+    product_dict = {
+        "id": product.id,
+        "name": product.name,
+        "code": product.code,
+        "description": product.description,
+        "category": product.category,
+        "price": product.price,
+        "cost": product.cost,
+        "image_url": product.image_url,
+        "supplier_id": product.supplier_id,
+        "is_active": product.is_active,
+        "created_at": product.created_at,
+        "updated_at": product.updated_at,
+        "sku": product.code,  # Frontend uses 'sku' field
+        "quantity": inventory.quantity_on_hand if inventory else 0,
+        "quantity_min": inventory.reorder_level if inventory else 10,
+    }
+    return product_dict
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -25,8 +51,12 @@ async def create_product(
         service = ProductService(db)
         result = service.create_product(product)
         logger.info(f"Product created successfully with ID: {result.id}")
+        
+        # Enrich with inventory data
+        enriched = _enrich_product_with_inventory(db, result)
+        
         return {
-            "data": result,
+            "data": enriched,
             "message": "Product created successfully",
             "status_code": 201
         }
@@ -43,21 +73,31 @@ async def create_product(
 
 @router.get("/")
 async def get_all_products(
-    skip: int = 0,
-    limit: int = 100,
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    search: str = Query(None, description="Search by name, code, or category"),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Get all active products with pagination."""
+    """Get all active products with pagination and search."""
     try:
-        logger.info(f"Fetching products with skip={skip}, limit={limit}")
+        skip = (page - 1) * limit
+        logger.info(f"Fetching products: page={page}, limit={limit}, search={search}")
         service = ProductService(db)
-        products = service.get_all_products(skip=skip, limit=limit)
+        products = service.get_all_products(skip=skip, limit=limit, search=search)
+        total_count = service.get_products_count(search=search)
         logger.info(f"Retrieved {len(products)} products")
+        
+        # Enrich all products with inventory data
+        enriched_products = [_enrich_product_with_inventory(db, p) for p in products]
+        
         return {
-            "data": products,
+            "data": enriched_products,
             "message": "Products retrieved successfully",
-            "status_code": 200
+            "status_code": 200,
+            "page": page,
+            "limit": limit,
+            "total": total_count
         }
     except HTTPException as e:
         logger.warning(f"HTTP error fetching products: {e.detail}")
@@ -90,8 +130,12 @@ async def get_product(
                 detail=f"Product with ID {validated_id} not found"
             )
         logger.info(f"Product found: {product.name}")
+        
+        # Enrich with inventory data
+        enriched = _enrich_product_with_inventory(db, product)
+        
         return {
-            "data": product,
+            "data": enriched,
             "message": "Product retrieved successfully",
             "status_code": 200
         }
@@ -108,7 +152,7 @@ async def get_product(
 @router.put("/{product_id}")
 async def update_product(
     product_id: int = Path(..., gt=0, description="Product ID must be a positive integer"),
-    product_update: ProductCreate = None,
+    product_update: ProductUpdate = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
@@ -129,8 +173,12 @@ async def update_product(
         
         updated = service.update_product(validated_id, product_update)
         logger.info(f"Product updated successfully: {updated.name}")
+        
+        # Enrich with inventory data
+        enriched = _enrich_product_with_inventory(db, updated)
+        
         return {
-            "data": updated,
+            "data": enriched,
             "message": "Product updated successfully",
             "status_code": 200
         }

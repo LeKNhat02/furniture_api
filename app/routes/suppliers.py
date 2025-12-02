@@ -41,22 +41,27 @@ async def create_supplier(
 
 @router.get("/")
 async def get_suppliers(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    search: str = Query("", max_length=255),
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    search: str = Query(None, description="Search by name, email, or phone"),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Get all suppliers with search"""
+    """Get all suppliers with pagination and search"""
     try:
-        logger.info(f"Fetching suppliers with skip={skip}, limit={limit}, search='{search}'")
+        skip = (page - 1) * limit
+        logger.info(f"Fetching suppliers: page={page}, limit={limit}, search={search}")
         service = SupplierService(db)
-        suppliers_list = service.get_all_suppliers(skip, limit, search)
+        suppliers_list = service.get_all_suppliers(skip, limit, search or "")
+        total_count = service.get_suppliers_count(search or "")
         logger.info(f"Retrieved {len(suppliers_list)} suppliers")
         return {
             "data": suppliers_list,
             "message": "Suppliers retrieved successfully",
-            "status_code": 200
+            "status_code": 200,
+            "page": page,
+            "limit": limit,
+            "total": total_count
         }
     except HTTPException as e:
         logger.warning(f"HTTP error fetching suppliers: {e.detail}")

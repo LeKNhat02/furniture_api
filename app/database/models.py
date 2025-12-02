@@ -29,7 +29,7 @@ class Product(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False, index=True)
-    code = Column(String(100), unique=True, index=True, nullable=False)
+    code = Column(String(100), unique=True, index=True, nullable=False)  # SKU
     description = Column(Text)
     category = Column(String(100))
     price = Column(Float, nullable=False)
@@ -76,6 +76,7 @@ class Supplier(Base):
     address = Column(Text)
     city = Column(String(100))
     country = Column(String(100))
+    contact_person = Column(String(255))
     bank_account = Column(String(50))
     tax_code = Column(String(50))
     created_at = Column(DateTime, server_default=func.now())
@@ -166,6 +167,8 @@ class Promotion(Base):
     description = Column(Text)
     discount_type = Column(String(50))  # PERCENTAGE, FIXED
     discount_value = Column(Float, nullable=False)
+    min_purchase = Column(Float, default=0)
+    max_discount = Column(Float)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
     is_active = Column(Boolean, default=True)

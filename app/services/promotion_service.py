@@ -42,10 +42,39 @@ class PromotionService:
         self.db.refresh(promotion)
         return promotion
     
-    def get_all_promotions(self, skip: int = 0, limit: int = 100) -> List[Promotion]:
-        """Get all promotions with pagination"""
-        return self.db.query(Promotion).offset(skip).limit(limit).all()
+    def get_all_promotions(
+        self,
+        skip: int = 0,
+        limit: int = 100,
+        search: Optional[str] = None,
+        is_active: Optional[bool] = None
+    ) -> List[Promotion]:
+        """Get all promotions with pagination, search, and filters"""
+        query = self.db.query(Promotion)
+        
+        # Search filter
+        if search:
+            query = query.filter(Promotion.name.ilike(f"%{search}%"))
+        
+        # Active status filter
+        if is_active is not None:
+            query = query.filter(Promotion.is_active == is_active)
+        
+        return query.offset(skip).limit(limit).all()
     
+    def get_promotions_count(self, search: Optional[str] = None, is_active: Optional[bool] = None) -> int:
+        """Get total count of promotions with optional filters"""
+        query = self.db.query(Promotion)
+        
+        if search:
+            search_term = f"%{search}%"
+            query = query.filter(Promotion.name.ilike(search_term))
+        
+        if is_active is not None:
+            query = query.filter(Promotion.is_active == is_active)
+        
+        return query.count()
+
     def get_promotion_by_id(self, promotion_id: int) -> Optional[Promotion]:
         """Get promotion by ID"""
         return self.db.query(Promotion).filter(Promotion.id == promotion_id).first()
@@ -97,4 +126,4 @@ class PromotionService:
     
     def get_active_promotions(self) -> List[Promotion]:
         """Get active promotions"""
-        return self.db.query(Promotion).filter(Promotion.is_active == True).all()
+        return self.db.query(Promotion).filter(Promotion.is_active).all()

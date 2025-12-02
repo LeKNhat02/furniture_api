@@ -39,6 +39,10 @@ class CustomerService:
         """Get all customers with pagination"""
         return self.db.query(Customer).offset(skip).limit(limit).all()
     
+    def get_customers_count(self) -> int:
+        """Get total count of all customers"""
+        return self.db.query(Customer).count()
+    
     def get_customer_by_id(self, customer_id: int) -> Optional[Customer]:
         """Get customer by ID"""
         return self.db.query(Customer).filter(Customer.id == customer_id).first()

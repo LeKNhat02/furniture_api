@@ -2,6 +2,7 @@ import logging
 from fastapi import APIRouter, Depends, Query, status, HTTPException
 from sqlalchemy.orm import Session
 from app.database.db import get_db
+from app.database.models import Customer
 from app.schemas.sale_schema import (
     SaleCreate, SaleUpdate, SaleResponse
 )
@@ -11,6 +12,31 @@ from typing import List
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/sales", tags=["sales"])
+
+def _enrich_sale_with_customer_info(db: Session, sale):
+    """Helper function to add customer info to sale response"""
+    customer = db.query(Customer).filter(Customer.id == sale.customer_id).first()
+    
+    sale_dict = {
+        "id": sale.id,
+        "invoice_number": sale.invoice_number,
+        "order_number": sale.invoice_number,  # Alias for frontend compatibility
+        "customer_id": sale.customer_id,
+        "customer_name": customer.name if customer else None,
+        "customer_phone": customer.phone if customer else None,
+        "user_id": sale.user_id,
+        "sale_date": sale.sale_date,
+        "total_amount": sale.total_amount,
+        "discount": sale.discount,
+        "tax": sale.tax,
+        "final_amount": sale.final_amount,
+        "status": sale.status,
+        "notes": sale.notes,
+        "items": sale.items,
+        "created_at": sale.created_at,
+        "updated_at": sale.updated_at,
+    }
+    return sale_dict
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_sale(
@@ -24,8 +50,12 @@ async def create_sale(
         service = SaleService(db)
         result = service.create_sale(sale_data, current_user.id)
         logger.info(f"Sale created successfully with ID: {result.id}")
+        
+        # Enrich with customer info
+        enriched = _enrich_sale_with_customer_info(db, result)
+        
         return {
-            "data": result,
+            "data": enriched,
             "message": "Sale created successfully",
             "status_code": 201
         }
@@ -41,21 +71,31 @@ async def create_sale(
 
 @router.get("/")
 async def get_sales(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    status_filter: str = Query(None, description="Filter by status: completed, pending, cancelled"),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Get all sales"""
+    """Get all sales with pagination and filters"""
     try:
-        logger.info(f"Fetching sales with skip={skip}, limit={limit}")
+        skip = (page - 1) * limit
+        logger.info(f"Fetching sales: page={page}, limit={limit}, status={status_filter}")
         service = SaleService(db)
         sales_list = service.get_all_sales(skip, limit)
+        total_count = service.get_sales_count()
         logger.info(f"Retrieved {len(sales_list)} sales")
+        
+        # Enrich all sales with customer info
+        enriched_sales = [_enrich_sale_with_customer_info(db, s) for s in sales_list]
+        
         return {
-            "data": sales_list,
+            "data": enriched_sales,
             "message": "Sales retrieved successfully",
-            "status_code": 200
+            "status_code": 200,
+            "page": page,
+            "limit": limit,
+            "total": total_count
         }
     except HTTPException as e:
         logger.warning(f"HTTP error fetching sales: {e.detail}")
@@ -85,8 +125,12 @@ async def get_sale(
                 detail=f"Sale {sale_id} not found"
             )
         logger.info(f"Sale found: {sale_id}")
+        
+        # Enrich with customer info
+        enriched = _enrich_sale_with_customer_info(db, sale)
+        
         return {
-            "data": sale,
+            "data": enriched,
             "message": "Sale retrieved successfully",
             "status_code": 200
         }
@@ -112,8 +156,12 @@ async def update_sale(
         service = SaleService(db)
         result = service.update_sale(sale_id, sale_data)
         logger.info(f"Sale updated successfully: {sale_id}")
+        
+        # Enrich with customer info
+        enriched = _enrich_sale_with_customer_info(db, result)
+        
         return {
-            "data": result,
+            "data": enriched,
             "message": "Sale updated successfully",
             "status_code": 200
         }

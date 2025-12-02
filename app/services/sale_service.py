@@ -93,6 +93,10 @@ class SaleService:
         """Get all sales with pagination"""
         return self.db.query(Sale).offset(skip).limit(limit).all()
     
+    def get_sales_count(self) -> int:
+        """Get total count of all sales"""
+        return self.db.query(Sale).count()
+    
     def get_sale_by_id(self, sale_id: int) -> Optional[Sale]:
         """Get sale by ID"""
         return self.db.query(Sale).filter(Sale.id == sale_id).first()

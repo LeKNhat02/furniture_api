@@ -37,6 +37,10 @@ class PaymentService:
         """Get all payments with pagination"""
         return self.db.query(Payment).offset(skip).limit(limit).all()
     
+    def get_payments_count(self) -> int:
+        """Get total count of all payments"""
+        return self.db.query(Payment).count()
+    
     def get_payment_by_id(self, payment_id: int) -> Optional[Payment]:
         """Get payment by ID"""
         return self.db.query(Payment).filter(Payment.id == payment_id).first()

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.database.models import Product, Inventory
-from app.schemas.product_schema import ProductCreate
+from app.schemas.product_schema import ProductCreate, ProductUpdate
 from fastapi import HTTPException, status
 from typing import List, Optional
 
@@ -28,13 +28,38 @@ class ProductService:
         self.db.refresh(product)
         return product
     
-    def get_all_products(self, skip: int = 0, limit: int = 100) -> List[Product]:
-        return self.db.query(Product).filter(Product.is_active == True).offset(skip).limit(limit).all()
+    def get_all_products(self, skip: int = 0, limit: int = 100, search: Optional[str] = None) -> List[Product]:
+        query = self.db.query(Product).filter(Product.is_active)
+        
+        # Search filter
+        if search:
+            search_term = f"%{search}%"
+            query = query.filter(
+                (Product.name.ilike(search_term)) | 
+                (Product.code.ilike(search_term)) |
+                (Product.category.ilike(search_term))
+            )
+        
+        return query.offset(skip).limit(limit).all()
+    
+    def get_products_count(self, search: Optional[str] = None) -> int:
+        """Get total count of products with optional search filter"""
+        query = self.db.query(Product).filter(Product.is_active)
+        
+        if search:
+            search_term = f"%{search}%"
+            query = query.filter(
+                (Product.name.ilike(search_term)) | 
+                (Product.code.ilike(search_term)) |
+                (Product.category.ilike(search_term))
+            )
+        
+        return query.count()
     
     def get_product_by_id(self, product_id: int) -> Optional[Product]:
         return self.db.query(Product).filter(Product.id == product_id).first()
     
-    def update_product(self, product_id: int, product_data: ProductCreate):
+    def update_product(self, product_id: int, product_data: ProductUpdate):
         product = self.get_product_by_id(product_id)
         if not product:
             raise HTTPException(
@@ -44,7 +69,8 @@ class ProductService:
         
         update_dict = product_data.dict(exclude_unset=True) if hasattr(product_data, 'dict') else product_data.__dict__
         for key, value in update_dict.items():
-            setattr(product, key, value)
+            if value is not None:
+                setattr(product, key, value)
         self.db.commit()
         self.db.refresh(product)
         return product

@@ -2,10 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.db import engine, Base
 from app.database import models
-from app.routes import auth, products, customers, suppliers, sales, inventory, payments, promotions
-from app.middleware.error_handler import register_error_handlers
-import logging
-
+from app.routes import auth, products, customers, suppliers, sales, inventory, payments, promotions, reports
 from app.middleware.error_handler import register_error_handlers
 import logging
 
@@ -43,6 +40,7 @@ app.include_router(sales.router)
 app.include_router(inventory.router)
 app.include_router(payments.router)
 app.include_router(promotions.router)
+app.include_router(reports.router)
 
 @app.get("/")
 def root():

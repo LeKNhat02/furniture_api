@@ -9,6 +9,7 @@ class SupplierBase(BaseModel):
     address: Optional[str] = None
     city: Optional[str] = None
     country: Optional[str] = None
+    contact_person: Optional[str] = Field(None, max_length=255, description="Contact person name", alias="contactPerson")
     bank_account: Optional[str] = None
     tax_code: Optional[str] = None
 
@@ -25,3 +26,4 @@ class SupplierResponse(SupplierBase):
     
     class Config:
         from_attributes = True
+        populate_by_name = True

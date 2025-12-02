@@ -34,8 +34,10 @@ class SaleUpdate(BaseModel):
 
 class SaleResponse(BaseModel):
     id: int
-    invoice_number: str
+    invoice_number: str = Field(..., alias="order_number", description="Invoice/Order number")
     customer_id: int
+    customer_name: Optional[str] = Field(None, description="Customer name from JOIN")
+    customer_phone: Optional[str] = Field(None, description="Customer phone from JOIN")
     user_id: Optional[int] = None
     sale_date: datetime
     total_amount: float
@@ -50,3 +52,4 @@ class SaleResponse(BaseModel):
 
     class Config:
         from_attributes = True
+        populate_by_name = True

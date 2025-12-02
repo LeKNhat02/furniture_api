@@ -39,6 +39,21 @@ class SupplierService:
         
         return query.offset(skip).limit(limit).all()
     
+    def get_suppliers_count(self, search: str = "") -> int:
+        """Get total count of suppliers with optional search filter"""
+        query = self.db.query(Supplier)
+        
+        if search:
+            search_term = f"%{search}%"
+            query = query.filter(
+                (Supplier.name.ilike(search_term)) |
+                (Supplier.email.ilike(search_term)) |
+                (Supplier.phone.ilike(search_term)) |
+                (Supplier.city.ilike(search_term))
+            )
+        
+        return query.count()
+
     def get_supplier_by_id(self, supplier_id: int) -> Optional[Supplier]:
         """Get supplier by ID"""
         return self.db.query(Supplier).filter(Supplier.id == supplier_id).first()

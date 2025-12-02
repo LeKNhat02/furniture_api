@@ -21,5 +21,10 @@ class CustomerResponse(CustomerBase):
     created_at: datetime
     updated_at: datetime
     
+    # Computed fields
+    total_spent: float = Field(default=0.0, description="Total amount spent", alias="totalSpent")
+    total_orders: int = Field(default=0, description="Total number of orders", alias="totalOrders")
+    
     class Config:
         from_attributes = True
+        populate_by_name = True
