@@ -89,13 +89,41 @@ class SaleService:
         self.db.refresh(sale)
         return sale
     
-    def get_all_sales(self, skip: int = 0, limit: int = 100) -> List[Sale]:
-        """Get all sales with pagination"""
-        return self.db.query(Sale).offset(skip).limit(limit).all()
+    def get_all_sales(self, skip: int = 0, limit: int = 100, search: Optional[str] = None, status_filter: Optional[str] = None) -> List[Sale]:
+        """Get all sales with pagination, search and filters"""
+        query = self.db.query(Sale)
+        
+        # Apply search filter
+        if search:
+            search_term = f"%{search}%"
+            query = query.join(Customer).filter(
+                (Sale.invoice_number.ilike(search_term)) |
+                (Customer.name.ilike(search_term))
+            )
+        
+        # Apply status filter
+        if status_filter:
+            query = query.filter(Sale.status == status_filter)
+        
+        return query.offset(skip).limit(limit).all()
     
-    def get_sales_count(self) -> int:
-        """Get total count of all sales"""
-        return self.db.query(Sale).count()
+    def get_sales_count(self, search: Optional[str] = None, status_filter: Optional[str] = None) -> int:
+        """Get total count of sales with optional search and filters"""
+        query = self.db.query(Sale)
+        
+        # Apply search filter
+        if search:
+            search_term = f"%{search}%"
+            query = query.join(Customer).filter(
+                (Sale.invoice_number.ilike(search_term)) |
+                (Customer.name.ilike(search_term))
+            )
+        
+        # Apply status filter
+        if status_filter:
+            query = query.filter(Sale.status == status_filter)
+        
+        return query.count()
     
     def get_sale_by_id(self, sale_id: int) -> Optional[Sale]:
         """Get sale by ID"""

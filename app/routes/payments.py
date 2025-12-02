@@ -68,15 +68,18 @@ async def create_payment(
 async def get_payments(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    search: str = Query(None, description="Search by reference number or sale invoice"),
+    status: str = Query(None, description="Filter by payment status"),
+    payment_method: str = Query(None, description="Filter by payment method"),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Get all payments with pagination"""
+    """Get all payments with pagination, search and filters"""
     try:
         skip = (page - 1) * limit
         service = PaymentService(db)
-        payments = service.get_all_payments(skip, limit)
-        total_count = service.get_payments_count()
+        payments = service.get_all_payments(skip, limit, search=search, status=status, payment_method=payment_method)
+        total_count = service.get_payments_count(search=search, status=status, payment_method=payment_method)
         
         # Enrich all payments with customer info
         enriched_payments = [_enrich_payment_with_customer_info(db, p) for p in payments]

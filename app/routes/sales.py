@@ -73,17 +73,18 @@ async def create_sale(
 async def get_sales(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    search: str = Query(None, description="Search by invoice number or customer name"),
     status_filter: str = Query(None, description="Filter by status: completed, pending, cancelled"),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Get all sales with pagination and filters"""
+    """Get all sales with pagination, search and filters"""
     try:
         skip = (page - 1) * limit
-        logger.info(f"Fetching sales: page={page}, limit={limit}, status={status_filter}")
+        logger.info(f"Fetching sales: page={page}, limit={limit}, search={search}, status={status_filter}")
         service = SaleService(db)
-        sales_list = service.get_all_sales(skip, limit)
-        total_count = service.get_sales_count()
+        sales_list = service.get_all_sales(skip, limit, search=search, status_filter=status_filter)
+        total_count = service.get_sales_count(search=search, status_filter=status_filter)
         logger.info(f"Retrieved {len(sales_list)} sales")
         
         # Enrich all sales with customer info

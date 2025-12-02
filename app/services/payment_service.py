@@ -33,13 +33,49 @@ class PaymentService:
         self.db.refresh(payment)
         return payment
     
-    def get_all_payments(self, skip: int = 0, limit: int = 100) -> List[Payment]:
-        """Get all payments with pagination"""
-        return self.db.query(Payment).offset(skip).limit(limit).all()
+    def get_all_payments(self, skip: int = 0, limit: int = 100, search: Optional[str] = None, status: Optional[str] = None, payment_method: Optional[str] = None) -> List[Payment]:
+        """Get all payments with pagination, search and filters"""
+        query = self.db.query(Payment)
+        
+        # Apply search filter
+        if search:
+            search_term = f"%{search}%"
+            query = query.outerjoin(Sale).filter(
+                (Payment.reference_number.ilike(search_term)) |
+                (Sale.invoice_number.ilike(search_term))
+            )
+        
+        # Apply status filter
+        if status:
+            query = query.filter(Payment.status == status)
+        
+        # Apply payment method filter
+        if payment_method:
+            query = query.filter(Payment.payment_method == payment_method)
+        
+        return query.offset(skip).limit(limit).all()
     
-    def get_payments_count(self) -> int:
-        """Get total count of all payments"""
-        return self.db.query(Payment).count()
+    def get_payments_count(self, search: Optional[str] = None, status: Optional[str] = None, payment_method: Optional[str] = None) -> int:
+        """Get total count of payments with optional search and filters"""
+        query = self.db.query(Payment)
+        
+        # Apply search filter
+        if search:
+            search_term = f"%{search}%"
+            query = query.outerjoin(Sale).filter(
+                (Payment.reference_number.ilike(search_term)) |
+                (Sale.invoice_number.ilike(search_term))
+            )
+        
+        # Apply status filter
+        if status:
+            query = query.filter(Payment.status == status)
+        
+        # Apply payment method filter
+        if payment_method:
+            query = query.filter(Payment.payment_method == payment_method)
+        
+        return query.count()
     
     def get_payment_by_id(self, payment_id: int) -> Optional[Payment]:
         """Get payment by ID"""
