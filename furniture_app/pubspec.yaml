@@ -68,6 +68,21 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   
-  # Thêm assets cho ảnh sản phẩm
+  # Thêm tất cả assets
   assets:
+    - assets/
+    - assets/banners/
+    - assets/categorys/
+    - assets/icons/
+    - assets/images/
+    - assets/payments/
     - assets/products/
+    - assets/products/PRO01/
+    - assets/products/PRO02/
+    - assets/products/PRO03/
+    - assets/products/PRO04/
+    - assets/products/PRO05/
+    - assets/products/PRO06/
+    - assets/products/PRO07/
+    - assets/products/PRO08/
+    - assets/products/PRO09/
